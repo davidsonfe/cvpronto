@@ -1,68 +1,110 @@
 body {
-  font-family: Arial, sans-serif;
-  background-color: #f4f4f4;
   margin: 0;
   padding: 0;
+  font-family: Arial, sans-serif;
+  background: linear-gradient(to right, #191d25, #222a35); /* Gradiente de azul */
 }
 
 .container {
-  max-width: 800px;
-  margin: 50px auto;
+  /* Mantém seu estilo atual */
+  max-width: 900px;
+  margin: 40px auto;
+  background-color: rgba(255, 255, 255, 0.9); /* Fundo branco com leve transparência */
   padding: 20px;
-  background-color: #fff;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  box-shadow: rgba(23, 92, 230, 0.15) 0px 4px 24px;
+  border: 1px solid rgb(133, 76, 230);
+  transition: background-color 0.3s, color 0.3s; /* Adicionando transição */
+}
+
+
+.container.dark {
+  background-color: #333;
+  color: #fff;
 }
 
 h1 {
   text-align: center;
-  color: #333;
-  margin-bottom: 20px;
+  color: #333; /* Cor normal */
+}
+
+/* Novo estilo para o título no modo escuro */
+.container.dark h1 {
+  color: #fff; /* Cor do título em modo escuro */
+}
+
+.toggle-button {
+  background-color: #007bff;
+  color: white;
+  padding: 10px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  display: block;
+  margin: 0 auto 20px; /* Centraliza o botão e adiciona margens */
 }
 
 form {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 15px;
+  margin-top: 20px;
 }
 
+.left-column, .right-column {
+  float: left;
+  width: 48%;
+  padding: 1%;
+}
+
+.clearfix::after {
+  content: "";
+  clear: both;
+  display: table;
+}
+
+/* Estilo para form-groups */
 .form-group {
-  display: flex;
-  flex-direction: column;
-}
-
-.form-group label {
-  margin-bottom: 5px;
-  font-weight: bold;
-}
-
-input[type="text"],
-input[type="email"],
-input[type="tel"],
-input[type="url"],
-textarea {
+  background-color: #f9f9f9;
   padding: 10px;
-  font-size: 16px;
-  border: 1px solid #ccc;
+  margin-bottom: 15px;
   border-radius: 5px;
-  outline: none;
 }
 
-textarea {
-  height: 80px;
+label {
+  display: block;
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+input[type="file"] {
+  width: auto; /* Define a largura como automática */
+  margin: 0 auto; /* Centraliza o campo */
+  display: block; /* Garante que seja tratado como bloco */
+}
+
+input, textarea {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 14px;
 }
 
 button {
-  padding: 15px;
-  background-color: #4CAF50;
+  background-color: #28a745;
   color: white;
-  font-size: 16px;
+  padding: 10px 20px;
   border: none;
-  border-radius: 5px;
+  border-radius: 4px;
   cursor: pointer;
+  font-size: 16px;
+  margin-top: 20px;
+  display: block; /* Centraliza o botão */
+  margin-left: auto; /* Adiciona margens automáticas para centralização */
+  margin-right: auto; /* Adiciona margens automáticas para centralização */
 }
 
 button:hover {
-  background-color: #45a049;
+  background-color: #218838;
 }
 
 .qrcode {
@@ -70,6 +112,99 @@ button:hover {
   margin-top: 20px;
 }
 
-.qrcode canvas {
-  margin-top: 10px;
+.qrcode h2 {
+  margin-bottom: 10px;
 }
+
+textarea {
+  word-wrap: break-word;
+  word-break: break-word;
+}
+
+.container.dark .form-group {
+  background-color: #444; /* Alterando o fundo dos grupos de formulários para escuro */
+}
+
+.container.dark input,
+.container.dark textarea {
+  background-color: #555; /* Alterando o fundo dos inputs e textareas para escuro */
+  color: white; /* Texto branco em modo escuro */
+  border: 1px solid #888; /* Borda mais clara em modo escuro */
+}
+
+.footer-content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 50px; /* Aumenta o espaçamento entre o QR code e o footer */
+}
+
+.profile-pic {
+  width: 30px; /* Diminui o tamanho da foto */
+  height: 30px;
+  border-radius: 50%;
+  margin: 0 10px;
+}
+
+.social-icons {
+  display: flex;
+  gap: 8px; /* Ajusta o espaço entre os ícones */
+}
+
+.icon {
+  width: 20px; /* Diminui o tamanho dos ícones */
+  height: 20px;
+}
+
+.footer p {
+  font-size: 12px; /* Diminui o tamanho do texto */
+}
+
+.logo-container {
+  display: flex;
+  align-items: center; /* Alinha o conteúdo verticalmente */
+  justify-content: center; /* Centraliza horizontalmente */
+  margin-bottom: 20px; /* Espaço abaixo da logomarca */
+}
+
+.logo {
+  width: 40px; /* Tamanho da logomarca */
+  height: 40px; /* Tamanho da logomarca */
+  border-radius: 50%;
+  margin-right: 10px; /* Espaço entre a logomarca e o texto */
+}
+
+/* Estilo padrão da logo */
+.logo-text {
+  font-family: 'Prosto One', sans-serif; /* Aplica a fonte Prosto */
+  font-size: 15px; /* Tamanho do texto */
+  color: #333; /* Cor do texto padrão */
+}
+
+/* Estilo da logo no modo escuro */
+.container.dark .logo-text {
+  color: white; /* Cor do texto em modo escuro */
+}
+
+.language-selector {
+  display: flex;
+  align-items: center; /* Alinha verticalmente */
+  justify-content: flex-start; /* Alinha à esquerda */
+  margin-bottom: 10px; /* Espaço abaixo das bandeiras */
+}
+
+.flag {
+  width: 30px; /* Tamanho da bandeira */
+  height: 30px; /* Tamanho da bandeira */
+  cursor: pointer; /* Cursor de mão ao passar o mouse */
+  margin-right: 5px; /* Espaço entre a bandeira e o texto */
+}
+
+.language-text {
+  margin-right: 15px; /* Espaço entre os textos */
+}
+
+
+
+
+
