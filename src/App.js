@@ -2,15 +2,18 @@ import React, { useState } from 'react';
 import jsPDF from 'jspdf';
 import 'jspdf-autotable'; // Importar a extensão AutoTable para tabelas no PDF
 import { QRCodeCanvas } from 'qrcode.react';
-import twitterIcon from './assets/twitter-icon.png'; 
-import linkedinIcon from './assets/linkedin-icon.png'; 
-import instagramIcon from './assets/instagram-icon.png'; 
-import youtubeIcon from './assets/youtube-icon.png'; 
-import profilePic from './assets/profile-pic.png'; // Sua foto como desenvolvedor
-import cvprontoLogo from './assets/cvpronto-logo.png'; // Importando a logomarca
-import brazilFlag from './assets/brazil-flag.png'; // Bandeira do Brasil
-import usaFlag from './assets/usa-flag.png'; // Bandeira dos EUA
+import { loadStripe } from '@stripe/stripe-js'; // Importa o Stripe
+import twitterIcon from './assets/twitter-icon.png';
+import linkedinIcon from './assets/linkedin-icon.png';
+import instagramIcon from './assets/instagram-icon.png';
+import youtubeIcon from './assets/youtube-icon.png';
+import profilePic from './assets/profile-pic.png'; 
+import cvprontoLogo from './assets/cvpronto-logo.png'; 
+import brazilFlag from './assets/brazil-flag.png'; 
+import usaFlag from './assets/usa-flag.png'; 
 import './App.css';
+
+const stripePromise = loadStripe('pk_test_51Q77Sf08o8UgTVqSNeSzjNNts9l7sbXmnSDZZgQ2kybWJJFVbKmBP1FQZ58gjm3cv1eNeDEtl4jQwR4eMnsYj0yD007wLvnler'); // Substitua pela sua chave pública
 
 function App() {
   const [formData, setFormData] = useState({
@@ -24,15 +27,21 @@ function App() {
     formacao: '',
     certificados: '',
   });
-  
-  const [foto, setFoto] = useState(null); // Adicionar estado para a foto no PDF
-  const [darkMode, setDarkMode] = useState(false); // Estado para o modo escuro
-  const [language, setLanguage] = useState('pt'); // Estado para o idioma
+
+  const [foto, setFoto] = useState(null); 
+  const [darkMode, setDarkMode] = useState(false); 
+  const [language, setLanguage] = useState('pt'); 
+  const [errors, setErrors] = useState({});
 
   const handleChange = (e) => {
     setFormData({
       ...formData,
       [e.target.name]: e.target.value,
+    });
+
+    setErrors({
+      ...errors,
+      [e.target.name]: '',
     });
   };
 
@@ -41,38 +50,81 @@ function App() {
     if (file) {
       const reader = new FileReader();
       reader.onloadend = () => {
-        setFoto(reader.result); // Armazena a imagem base64
+        setFoto(reader.result); 
       };
       reader.readAsDataURL(file);
     }
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
+  const isEmailValid = (email) => {
+    const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return re.test(String(email).toLowerCase());
+  };
 
-    const doc = new jsPDF();
-    const qrCanvas = document.querySelector("canvas");
-    const qrImage = qrCanvas.toDataURL("image/png");
+  const isPhoneValid = (phone) => {
+    return phone.length >= 10; 
+  };
 
-    // Adiciona a foto se estiver presente
-    if (foto) {
-      const img = new Image();
-      img.src = foto;
-      img.onload = () => {
-        const imgWidth = 40; // Largura da imagem
-        const imgHeight = (img.height / img.width) * imgWidth; // Altura proporcional
-        doc.addImage(img, 'JPEG', 160, 10, imgWidth, imgHeight); // Adiciona a foto no topo
-        gerarTabela(doc); // Chama função para gerar tabela
-        doc.save(`${formData.nome}_Curriculo.pdf`);
-      };
-    } else {
-      gerarTabela(doc); // Chama função para gerar tabela se não houver foto
-      doc.save(`${formData.nome}_Curriculo.pdf`);
+  const handlePayment = async () => {
+    try {
+      const stripe = await stripePromise;
+
+      const response = await fetch('http://localhost:8080/api/checkout', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          product: 'Gerar CV',
+          amount: 990, 
+        }),
+      });
+
+      const { sessionId } = await response.json();
+
+      const { error } = await stripe.redirectToCheckout({
+        sessionId,
+      });
+
+      if (error) {
+        console.error('Erro ao redirecionar para o Stripe:', error);
+      } else {
+        gerarPDF(); // Chame a função para gerar o PDF após o pagamento
+      }
+    } catch (error) {
+      console.error('Erro ao iniciar o pagamento:', error);
     }
   };
 
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    let validationErrors = {};
+
+    if (!formData.nome) {
+      validationErrors.nome = language === 'pt' ? 'Por favor, insira seu nome.' : 'Please enter your name.';
+    }
+
+    if (!formData.email || !isEmailValid(formData.email)) {
+      validationErrors.email = language === 'pt' ? 'Por favor, insira um email válido.' : 'Please enter a valid email.';
+    }
+
+    if (!formData.telefone || !isPhoneValid(formData.telefone)) {
+      validationErrors.telefone = language === 'pt' ? 'Por favor, insira um telefone válido.' : 'Please enter a valid phone number.';
+    }
+
+    if (!formData.linkedin) {
+      validationErrors.linkedin = language === 'pt' ? 'Por favor, insira seu perfil do LinkedIn.' : 'Please enter your LinkedIn profile.';
+    }
+
+    if (Object.keys(validationErrors).length > 0) {
+      setErrors(validationErrors);
+      return;
+    }
+
+    handlePayment(); 
+  };
+
   const gerarTabela = (doc) => {
-    // Definições da tabela
     const columns = [
       { header: language === 'pt' ? 'Campo' : 'Field', dataKey: 'campo' },
       { header: language === 'pt' ? 'Informação' : 'Information', dataKey: 'informacao' }
@@ -90,23 +142,31 @@ function App() {
       { campo: language === 'pt' ? 'Certificados' : 'Certificates', informacao: formData.certificados },
     ];
 
-    // Configuração da tabela
     doc.autoTable(columns, rows, {
-      startY: 60, // Define a posição Y onde a tabela começa
+      startY: 60,
       styles: {
         cellPadding: 5,
         fontSize: 10,
-        overflow: 'linebreak', // Faz o texto quebrar a linha
-        columnWidth: 'auto', // Ajusta a largura da coluna automaticamente
+        overflow: 'linebreak',
+        columnWidth: 'auto',
       },
       columnStyles: {
-        campo: { cellWidth: 50, fontStyle: 'bold' }, // Títulos em negrito
-        informacao: { cellWidth: 'auto' }, // Largura automática para "Informação"
+        campo: { cellWidth: 50, fontStyle: 'bold' },
+        informacao: { cellWidth: 'auto' },
       },
     });
   };
 
-  // Função para alternar entre idiomas
+  const gerarPDF = () => {
+    const doc = new jsPDF();
+
+    doc.text('Currículo', 10, 10);
+    gerarTabela(doc); // Chama a função para gerar a tabela no PDF
+
+    // Baixe o PDF
+    doc.save('curriculo.pdf');
+  };
+
   const toggleLanguage = (lang) => {
     setLanguage(lang);
   };
@@ -136,22 +196,26 @@ function App() {
           <div className="form-group">
             <label>{language === 'pt' ? 'Nome' : 'Name'}</label>
             <input type="text" name="nome" placeholder={language === 'pt' ? 'Nome' : 'Name'} onChange={handleChange} />
+            {errors.nome && <span className="error-message">{errors.nome}</span>}
           </div>
           <div className="form-group">
             <label>{language === 'pt' ? 'Email' : 'Email'}</label>
             <input type="email" name="email" placeholder={language === 'pt' ? 'Email' : 'Email'} onChange={handleChange} />
+            {errors.email && <span className="error-message">{errors.email}</span>}
           </div>
           <div className="form-group">
             <label>{language === 'pt' ? 'Telefone' : 'Phone'}</label>
             <input type="tel" name="telefone" placeholder={language === 'pt' ? 'Telefone' : 'Phone'} onChange={handleChange} />
+            {errors.telefone && <span className="error-message">{errors.telefone}</span>}
           </div>
           <div className="form-group">
             <label>{language === 'pt' ? 'LinkedIn' : 'LinkedIn'}</label>
             <input type="url" name="linkedin" placeholder={language === 'pt' ? 'LinkedIn' : 'LinkedIn'} onChange={handleChange} />
+            {errors.linkedin && <span className="error-message">{errors.linkedin}</span>}
           </div>
           <div className="form-group">
             <label>{language === 'pt' ? 'Endereço' : 'Address'}</label>
-            <input type="text" name="endereco" placeholder={language === 'pt' ? 'Endereço' : 'Address'} onChange={handleChange} maxLength="300"/>
+            <input type="text" name="endereco" placeholder={language === 'pt' ? 'Endereço' : 'Address'} onChange={handleChange} maxLength="300" />
           </div>
         </div>
         <div className="right-column">
@@ -172,32 +236,31 @@ function App() {
             <textarea name="certificados" placeholder={language === 'pt' ? 'Certificados' : 'Certificates'} onChange={handleChange} maxLength="300"></textarea>
           </div>
         </div>
-        <button type="submit">{language === 'pt' ? 'Gerar CV' : 'Generate CV'}</button>
+        
+        <button type="submit">{language === 'pt' ? 'Gerar CV - R$ 9,90' : 'Generate CV - $1.98'}</button>
       </form>
 
-      {/* Exibir QR Code */}
       <div className="qrcode">
         <h2>{language === 'pt' ? 'QR Code do Currículo' : 'Resume QR Code'}</h2>
         <QRCodeCanvas value={formData.linkedin || ''} />
       </div>
 
-      {/* Footer */}
       <footer className="footer">
         <div className="footer-content">
           <p>Feito por Davidson Felix</p>
-          <img src={profilePic} alt="Davidson Felix" className="profile-pic" /> {/* Foto do desenvolvedor */}
+          <img src={profilePic} alt="Davidson Felix" className="profile-pic" />
           <div className="social-icons">
             <a href="https://twitter.com/yourusername" target="_blank" rel="noopener noreferrer">
-              <img src={twitterIcon} alt="Twitter" className="icon"/>
+              <img src={twitterIcon} alt="Twitter" className="icon" />
             </a>
             <a href="https://www.linkedin.com/in/davidson-felix-0884331ab/" target="_blank" rel="noopener noreferrer">
-              <img src={linkedinIcon} alt="LinkedIn" className="icon"/>
+              <img src={linkedinIcon} alt="LinkedIn" className="icon" />
             </a>
             <a href="https://www.instagram.com/dedeibass/" target="_blank" rel="noopener noreferrer">
-              <img src={instagramIcon} alt="Instagram" className="icon"/>
+              <img src={instagramIcon} alt="Instagram" className="icon" />
             </a>
             <a href="https://www.youtube.com/@dedeifelix" target="_blank" rel="noopener noreferrer">
-              <img src={youtubeIcon} alt="YouTube" className="icon"/>
+              <img src={youtubeIcon} alt="YouTube" className="icon" />
             </a>
           </div>
         </div>
