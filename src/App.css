@@ -211,6 +211,38 @@ textarea {
 }
 
 
+.success-container {
+  max-width: 600px;
+  margin: 50px auto;
+  text-align: center;
+  background-color: rgba(255, 255, 255, 0.1); /* Fundo semitransparente */
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+}
+
+.success-title {
+  font-size: 28px;
+  color: #28a745; /* Verde para indicar sucesso */
+  margin-bottom: 20px;
+}
+
+.success-message {
+  font-size: 18px;
+  color: #f1f1f1; /* Texto claro */
+}
+
+.verifying-message {
+  font-size: 18px;
+  color: #ffc107; /* Amarelo para o status de verificação */
+}
+
+.error-message {
+  font-size: 18px;
+  color: red;
+  margin-bottom: 20px;
+  font-weight: bold;
+}
 
 
 
