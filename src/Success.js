@@ -34,7 +34,7 @@ const Success = () => {
     if (sessionId) {
       console.log("Verificando pagamento...");
 
-      fetch(`http://localhost:8080/api/verify-payment/${sessionId}`)
+      fetch(`https://cvpronto-backend.onrender.com/api/verify-payment/${sessionId}`)
         .then((res) => res.json())
         .then((data) => {
           if (data.paymentStatus === 'paid') {
@@ -42,7 +42,7 @@ const Success = () => {
             console.log("Pagamento confirmado.");
 
             // Verificar se o PDF já foi gerado
-            fetch(`http://localhost:8080/api/pdf-generated/${sessionId}`)
+            fetch(`https://cvpronto-backend.onrender.com/api/pdf-generated/${sessionId}`)
               .then((res) => res.json())
               .then((data) => {
                 if (!data.pdfGenerated) {
@@ -55,7 +55,7 @@ const Success = () => {
 
             // Armazenar a foto após a confirmação do pagamento
             if (foto) {
-              fetch(`http://localhost:8080/api/store-photo/${sessionId}`, {
+              fetch(`https://cvpronto-backend.onrender.com/api/store-photo/${sessionId}`, {
                 method: 'POST',
                 headers: {
                   'Content-Type': 'application/json'
@@ -113,7 +113,7 @@ const gerarPDF = () => {
     console.log("PDF salvo com sucesso.");
 
     // Marcar PDF como gerado no backend
-    fetch(`http://localhost:8080/api/mark-pdf-generated/${sessionId}`, {
+    fetch(`https://cvpronto-backend.onrender.com/api/mark-pdf-generated/${sessionId}`, {
       method: 'POST',
     }).catch(err => console.error('Erro ao marcar PDF como gerado:', err));
 

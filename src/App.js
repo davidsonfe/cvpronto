@@ -108,7 +108,7 @@ function App() {
   const handlePayment = async () => {
     try {
       const stripe = await stripePromise;
-      const response = await fetch('http://localhost:8080/api/checkout', {
+      const response = await fetch('https://cvpronto-backend.onrender.com/api/checkout', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
