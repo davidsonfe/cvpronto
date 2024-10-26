@@ -38,6 +38,7 @@ const Success = () => {
       fetch(`${apiUrl}/verify-payment/${sessionId}`)
         .then((res) => res.json())
         .then((data) => {
+          console.log("Resposta do pagamento:", data); // Log da resposta
           if (data.paymentStatus === 'paid') {
             setPaymentVerified(true);
             console.log("Pagamento confirmado.");
