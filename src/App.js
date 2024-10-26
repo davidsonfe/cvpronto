@@ -109,7 +109,7 @@ function App() {
   const handlePayment = async () => {
     try {
       const stripe = await stripePromise;
-      const response = await fetch(`${apiUrl}/some-endpoint`, {
+      const response = await fetch(`${apiUrl}/checkout`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
