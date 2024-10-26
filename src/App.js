@@ -23,6 +23,7 @@ function App() {
   const [darkMode, setDarkMode] = useState(false);
   const [language, setLanguage] = useState('pt');
   const navigate = useNavigate(); 
+  const apiUrl = process.env.REACT_APP_API_URL;
 
   // Inicializa `formData` caso esteja null ou undefined
   useEffect(() => {
@@ -108,7 +109,7 @@ function App() {
   const handlePayment = async () => {
     try {
       const stripe = await stripePromise;
-      const response = await fetch('https://cvpronto-backend.onrender.com/api/checkout', {
+      const response = await fetch(`${apiUrl}/some-endpoint`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
