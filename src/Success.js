@@ -13,6 +13,7 @@ const Success = () => {
   const [pdfGenerated, setPdfGenerated] = useState(false); 
 
   const sessionId = new URLSearchParams(location.search).get('session_id');
+  const apiUrl = process.env.REACT_APP_API_URL; // URL para APIs
   const apiUrlSuccess = process.env.REACT_APP_API_URL_SUCCESS;
 
   // Log para verificar execução de efeitos
@@ -35,7 +36,7 @@ const Success = () => {
     if (sessionId) {
       console.log("Verificando pagamento...");
 
-      fetch(`${apiUrlSuccess}/verify-payment/${sessionId}`)
+      fetch(`${apiUrl}/verify-payment/${sessionId}`)
         .then((res) => res.json())
         .then((data) => {
           console.log("Resposta do pagamento:", data); // Log da resposta
