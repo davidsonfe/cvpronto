@@ -13,7 +13,7 @@ const Success = () => {
   const [pdfGenerated, setPdfGenerated] = useState(false); 
 
   const sessionId = new URLSearchParams(location.search).get('session_id');
-  const apiUrl = process.env.REACT_APP_API_URL_SUCCESS;
+  const apiUrlSuccess = process.env.REACT_APP_API_URL_SUCCESS;
 
   // Log para verificar execução de efeitos
   console.log("Renderizando Success.js");
@@ -35,7 +35,7 @@ const Success = () => {
     if (sessionId) {
       console.log("Verificando pagamento...");
 
-      fetch(`${apiUrl}/verify-payment/${sessionId}`)
+      fetch(`${apiUrlSuccess}/verify-payment/${sessionId}`)
         .then((res) => res.json())
         .then((data) => {
           console.log("Resposta do pagamento:", data); // Log da resposta
@@ -44,7 +44,7 @@ const Success = () => {
             console.log("Pagamento confirmado.");
 
             // Verificar se o PDF já foi gerado
-            fetch(`${apiUrl}/pdf-generated/${sessionId}`)
+            fetch(`${apiUrlSuccess}/pdf-generated/${sessionId}`)
               .then((res) => res.json())
               .then((data) => {
                 if (!data.pdfGenerated) {
@@ -57,7 +57,7 @@ const Success = () => {
 
             // Armazenar a foto após a confirmação do pagamento
             if (foto) {
-              fetch(`${apiUrl}/store-photo/${sessionId}`, {
+              fetch(`${apiUrlSuccess}/store-photo/${sessionId}`, {
                 method: 'POST',
                 headers: {
                   'Content-Type': 'application/json'
@@ -115,7 +115,7 @@ const gerarPDF = () => {
     console.log("PDF salvo com sucesso.");
 
     // Marcar PDF como gerado no backend
-    fetch(`${apiUrl}/mark-pdf-generated/${sessionId}`, {
+    fetch(`${apiUrlSuccess}/mark-pdf-generated/${sessionId}`, {
       method: 'POST',
     }).catch(err => console.error('Erro ao marcar PDF como gerado:', err));
 
