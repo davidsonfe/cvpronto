@@ -45,7 +45,7 @@ const Success = () => {
             console.log("Pagamento confirmado.");
 
             // Verificar se o PDF já foi gerado
-            fetch(`${apiUrlSuccess}/pdf-generated/${sessionId}`)
+            fetch(`${apiUrl}/pdf-generated/${sessionId}`)
               .then((res) => res.json())
               .then((data) => {
                 if (!data.pdfGenerated) {
@@ -58,7 +58,8 @@ const Success = () => {
 
             // Armazenar a foto após a confirmação do pagamento
             if (foto) {
-              fetch(`${apiUrlSuccess}/store-photo/${sessionId}`, {
+  const apiUrl = process.env.REACT_APP_API_URL; // URL para APIs
+              fetch(`${apiUrl}/store-photo/${sessionId}`, {
                 method: 'POST',
                 headers: {
                   'Content-Type': 'application/json'
@@ -116,7 +117,7 @@ const gerarPDF = () => {
     console.log("PDF salvo com sucesso.");
 
     // Marcar PDF como gerado no backend
-    fetch(`${apiUrlSuccess}/mark-pdf-generated/${sessionId}`, {
+    fetch(`${apiUrl}/mark-pdf-generated/${sessionId}`, {
       method: 'POST',
     }).catch(err => console.error('Erro ao marcar PDF como gerado:', err));
 
