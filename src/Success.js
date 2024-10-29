@@ -43,7 +43,7 @@ const Success = () => {
           if (data.paymentStatus === 'paid') {
             setPaymentVerified(true);
             console.log("Pagamento confirmado.");
-
+            navigate('/success', { state: { formData, foto } });
             // Verificar se o PDF já foi gerado
             fetch(`${apiUrl}/pdf-generated/${sessionId}`)
               .then((res) => res.json())
@@ -58,7 +58,7 @@ const Success = () => {
 
             // Armazenar a foto após a confirmação do pagamento
             if (foto) {
-  const apiUrl = process.env.REACT_APP_API_URL; // URL para APIs
+              const apiUrl = process.env.REACT_APP_API_URL; // URL para APIs
               fetch(`${apiUrl}/store-photo/${sessionId}`, {
                 method: 'POST',
                 headers: {
