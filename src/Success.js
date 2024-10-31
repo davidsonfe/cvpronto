@@ -14,6 +14,8 @@ const Success = () => {
 
   const sessionId = new URLSearchParams(location.search).get('session_id');
   const apiUrl = process.env.REACT_APP_API_URL; // URL para APIs
+  const checkoutUrl = process.env.REACT_APP_CHECKOUT_URL;
+
   
 
   // Log para verificar execução de efeitos
